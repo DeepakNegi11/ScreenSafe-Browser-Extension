@@ -1,0 +1,79 @@
+{
+  "manifest_version": 3,
+  "name": "ScreenSafe",
+  "version": "1.0.0",
+  "description": "Automatically blurs sensitive data during screen sharing. Your screen stays untouched.",
+
+  "permissions": [
+    "storage",
+    "activeTab",
+    "scripting"
+  ],
+
+  "host_permissions": [
+    "https://meet.google.com/*",
+    "https://*.zoom.us/*",
+    "https://*.teams.microsoft.com/*",
+    "https://*.whereby.com/*",
+    "https://app.slack.com/*",
+    "https://*.webex.com/*"
+  ],
+
+  "background": {
+    "service_worker": "background.js",
+    "type": "module"
+  },
+
+  "content_scripts": [
+    {
+      "matches": [
+        "https://meet.google.com/*",
+        "https://*.zoom.us/*",
+        "https://*.teams.microsoft.com/*",
+        "https://*.whereby.com/*",
+        "https://app.slack.com/*",
+        "https://*.webex.com/*"
+      ],
+      "js": ["content_script.js"],
+      "run_at": "document_start",
+      "all_frames": true
+    }
+  ],
+
+  "action": {
+    "default_popup": "popup.html",
+    "default_icon": {
+      "16":  "icons/icon16.png",
+      "48":  "icons/icon48.png",
+      "128": "icons/icon128.png"
+    }
+  },
+
+  "web_accessible_resources": [
+    {
+      "resources": [
+        "injected.js",
+        "ocr_bundle.js"
+      ],
+      "matches": [
+        "https://meet.google.com/*",
+        "https://*.zoom.us/*",
+        "https://*.teams.microsoft.com/*",
+        "https://*.whereby.com/*",
+        "https://app.slack.com/*",
+        "https://*.webex.com/*"
+      ]
+    }
+  ],
+
+  "icons": {
+    "16":  "icons/icon16.png",
+    "48":  "icons/icon48.png",
+    "128": "icons/icon128.png"
+  },
+
+  "content_security_policy": {
+    "extension_pages": "script-src 'self'; object-src 'self'",
+    "sandbox": "sandbox allow-scripts; script-src 'self' https://cdn.jsdelivr.net https://tessdata.projectnaptha.com"
+  }
+}

@@ -1,0 +1,174 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8" />
+  <title>ScreenSafe</title>
+  <link href="https://fonts.googleapis.com/css2?family=DM+Sans:wght@300;400;500;600&family=DM+Mono:wght@400;500&display=swap" rel="stylesheet" />
+  <style>
+    *,*::before,*::after{box-sizing:border-box;margin:0;padding:0}
+    :root{
+      --bg:#0c0c0f;--surface:#141418;--surface2:#1c1c22;
+      --border:rgba(255,255,255,0.07);--border2:rgba(255,255,255,0.12);
+      --text:#f0f0f2;--muted:#6b6b7a;
+      --accent:#6ee7b7;--accent-dim:rgba(110,231,183,0.12);
+    }
+    body{
+      width:300px;min-height:400px;
+      background:var(--bg);color:var(--text);
+      font-family:'DM Sans',sans-serif;font-size:13px;
+    }
+    .header{
+      padding:16px;border-bottom:1px solid var(--border);
+      display:flex;align-items:center;justify-content:space-between;
+    }
+    .brand{display:flex;align-items:center;gap:9px}
+    .brand-icon{
+      width:26px;height:26px;
+      background:linear-gradient(135deg,#6ee7b7,#3b82f6);
+      border-radius:7px;display:flex;align-items:center;
+      justify-content:center;font-size:13px;
+    }
+    .brand-name{font-size:14px;font-weight:600;letter-spacing:-0.3px}
+    .brand-sub{font-size:10px;color:var(--muted)}
+    .toggle-wrap{position:relative;width:40px;height:22px}
+    .toggle-wrap input{opacity:0;width:0;height:0;position:absolute}
+    .track{
+      position:absolute;inset:0;background:var(--surface2);
+      border-radius:11px;cursor:pointer;
+      border:1px solid var(--border2);transition:all 0.2s;
+    }
+    .track::after{
+      content:'';position:absolute;left:3px;top:50%;
+      transform:translateY(-50%);width:14px;height:14px;
+      background:var(--muted);border-radius:50%;
+      transition:all 0.2s;
+    }
+    input:checked+.track{background:var(--accent-dim);border-color:var(--accent)}
+    input:checked+.track::after{transform:translate(18px,-50%);background:var(--accent)}
+
+    .status{
+      margin:12px;padding:12px;background:var(--surface);
+      border-radius:10px;border:1px solid var(--border);
+      display:flex;align-items:center;gap:10px;transition:all 0.3s;
+    }
+    .status.on{border-color:rgba(110,231,183,0.3);background:rgba(110,231,183,0.04)}
+    .dot{
+      width:9px;height:9px;border-radius:50%;
+      background:var(--muted);flex-shrink:0;transition:all 0.3s;
+    }
+    .dot.on{background:var(--accent);box-shadow:0 0 8px var(--accent);animation:p 2s infinite}
+    @keyframes p{0%,100%{opacity:1}50%{opacity:0.4}}
+    .st{flex:1}
+    .st-title{font-size:12px;font-weight:500}
+    .st-sub{font-size:11px;color:var(--muted);margin-top:2px}
+
+    .sec{padding:0 12px 12px}
+    .sec-label{
+      font-size:10px;font-weight:600;text-transform:uppercase;
+      letter-spacing:0.8px;color:var(--muted);margin-bottom:8px;
+    }
+    .grid3{display:grid;grid-template-columns:repeat(3,1fr);gap:5px}
+    .btn{
+      padding:8px 4px;background:var(--surface);
+      border:1px solid var(--border);border-radius:8px;
+      color:var(--muted);font-family:'DM Sans',sans-serif;
+      font-size:11px;font-weight:500;cursor:pointer;
+      text-align:center;transition:all 0.15s;
+      display:flex;flex-direction:column;align-items:center;gap:3px;
+    }
+    .btn:hover{border-color:var(--border2);color:var(--text)}
+    .btn.on{background:var(--accent-dim);border-color:var(--accent);color:var(--accent)}
+    .btn-icon{font-size:15px}
+
+    .slider-row{display:flex;align-items:center;justify-content:space-between;margin-bottom:6px}
+    .slider-val{font-family:'DM Mono',monospace;font-size:11px;color:var(--accent)}
+    input[type=range]{
+      -webkit-appearance:none;width:100%;height:3px;
+      border-radius:2px;background:var(--surface2);outline:none;
+    }
+    input[type=range]::-webkit-slider-thumb{
+      -webkit-appearance:none;width:13px;height:13px;
+      border-radius:50%;background:var(--accent);cursor:pointer;
+      border:2px solid var(--bg);
+    }
+    .divider{height:1px;background:var(--border);margin:0 12px 12px}
+    .footer{
+      padding:10px 12px;border-top:1px solid var(--border);
+      display:flex;align-items:center;justify-content:space-between;
+    }
+    .footer-text{font-size:10px;color:var(--muted)}
+    .badge{
+      font-size:10px;padding:3px 8px;border-radius:20px;
+      background:var(--surface2);color:var(--muted);
+      border:1px solid var(--border);
+    }
+    .badge.on{background:var(--accent-dim);color:var(--accent);border-color:rgba(110,231,183,0.3)}
+    .blur-wrap{transition:opacity 0.2s}
+    .blur-wrap.off{opacity:0.3;pointer-events:none}
+  </style>
+</head>
+<body>
+  <div class="header">
+    <div class="brand">
+      <div class="brand-icon">🛡️</div>
+      <div>
+        <div class="brand-name">ScreenSafe</div>
+        <div class="brand-sub">Screen share privacy</div>
+      </div>
+    </div>
+    <label class="toggle-wrap">
+      <input type="checkbox" id="enabled" checked />
+      <span class="track"></span>
+    </label>
+  </div>
+
+  <div class="status" id="status">
+    <div class="dot" id="dot"></div>
+    <div class="st">
+      <div class="st-title" id="st-title">Ready to protect</div>
+      <div class="st-sub"   id="st-sub">Start a screen share to activate</div>
+    </div>
+  </div>
+
+  <div class="sec">
+    <div class="sec-label">Hide Method</div>
+    <div class="grid3">
+      <button class="btn on" data-method="blur">
+        <span class="btn-icon">🌫️</span>Blur
+      </button>
+      <button class="btn" data-method="blackbox">
+        <span class="btn-icon">⬛</span>Black Box
+      </button>
+      <button class="btn" data-method="pixelate">
+        <span class="btn-icon">🔲</span>Pixelate
+      </button>
+    </div>
+  </div>
+
+  <div class="sec blur-wrap" id="blur-wrap">
+    <div class="slider-row">
+      <span style="font-size:12px">Blur Strength</span>
+      <span class="slider-val" id="bval">20</span>
+    </div>
+    <input type="range" id="brange" min="5" max="40" value="20" />
+  </div>
+
+  <div class="divider"></div>
+
+  <div class="sec">
+    <div class="sec-label">Detection Sensitivity</div>
+    <div class="grid3">
+      <button class="btn" data-sens="low">Low</button>
+      <button class="btn on" data-sens="medium">Medium</button>
+      <button class="btn" data-sens="high">High</button>
+    </div>
+  </div>
+
+  <div class="footer">
+    <span class="footer-text">ScreenSafe v1.0</span>
+    <span class="badge" id="badge">No meeting</span>
+  </div>
+
+  <script src="popup.js"></script>
+</body>
+</html>
